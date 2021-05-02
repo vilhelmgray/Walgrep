@@ -113,7 +113,7 @@ class Walgrep(Gtk.Window):
     def parse_zip(self, root, relpath, pattern, search_by_name):
         path = os.path.join(root, relpath)
         with zipfile.ZipFile(path, 'r') as z:
-            archive = relpath;
+            archive = GLib.markup_escape_text(relpath);
 
             for member in z.infolist():
                 if not self.searching:
@@ -123,12 +123,20 @@ class Walgrep(Gtk.Window):
                     continue
 
                 if search_by_name:
-                    match = re.subn(pattern, "<span foreground='red'>\g<0></span>", member.filename)
-                    if match[1]:
+                    matches = re.finditer(pattern, member.filename)
+                    filename = ""
+                    pos = 0
+                    for m in matches:
+                        prefix = GLib.markup_escape_text(member.filename[pos:m.start()])
+                        match = f"<span foreground='red'>{GLib.markup_escape_text(m[0])}</span>"
+                        pos = m.end()
+                        filename += f'{prefix}{match}'
+                    if filename:
+                        filename += GLib.markup_escape_text(member.filename[pos:])
                         if archive:
-                            self.resultsQueue.put(("a", relpath))
+                            self.resultsQueue.put(("a", archive))
                             archive = None
-                        self.resultsQueue.put(("m", match[0]))
+                        self.resultsQueue.put(("m", filename))
                     continue
 
                 with z.open(member) as f:
@@ -140,10 +148,10 @@ class Walgrep(Gtk.Window):
                             matches = re.finditer(pattern, line)
                             for m in matches:
                                 if archive:
-                                    self.resultsQueue.put(("a", relpath))
+                                    self.resultsQueue.put(("a", archive))
                                     archive = None
                                 if member.filename:
-                                    self.resultsQueue.put(("m", member.filename))
+                                    self.resultsQueue.put(("m", GLib.markup_escape_text(member.filename)))
                                     member.filename = None
                                 prefix = GLib.markup_escape_text(line[:m.start()])
                                 match = f'''<span foreground='red'>{GLib.markup_escape_text(m[0])}</span>'''
