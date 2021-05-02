@@ -92,7 +92,7 @@ class Walgrep(Gtk.Window):
         fileColumn.pack_start(iconRenderer, False)
         fileColumn.pack_start(textRenderer, False)
         fileColumn.add_attribute(iconRenderer, "icon_name", 0)
-        fileColumn.add_attribute(textRenderer, "text", 1)
+        fileColumn.add_attribute(textRenderer, "markup", 1)
         fileColumn.set_sort_column_id(1)
         fileColumn.set_resizable(True)
         fileColumn.set_sort_indicator(True)
@@ -123,11 +123,12 @@ class Walgrep(Gtk.Window):
                     continue
 
                 if search_by_name:
-                    if re.search(pattern, member.filename):
+                    match = re.subn(pattern, "<span foreground='red'>\g<0></span>", member.filename)
+                    if match[1]:
                         if archive:
                             self.resultsQueue.put(("a", relpath))
                             archive = None
-                        self.resultsQueue.put(("m", member.filename))
+                        self.resultsQueue.put(("m", match[0]))
                     continue
 
                 with z.open(member) as f:
