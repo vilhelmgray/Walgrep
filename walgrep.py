@@ -99,7 +99,7 @@ class Walgrep(Gtk.Window):
         lineColumn = Gtk.TreeViewColumn("Line", textRenderer, text=2)
         lineColumn.set_sort_column_id(2)
         lineColumn.set_sort_indicator(True)
-        stringColumn = Gtk.TreeViewColumn("String", textRenderer, text=3)
+        stringColumn = Gtk.TreeViewColumn("String", textRenderer, markup=3)
         resultsTree.append_column(fileColumn)
         resultsTree.append_column(lineColumn)
         resultsTree.append_column(stringColumn)
@@ -136,15 +136,18 @@ class Walgrep(Gtk.Window):
                         for i, line in enumerate(lines):
                             if not self.searching:
                                 break;
-                            match = re.search(pattern, line)
-                            if match:
+                            matches = re.finditer(pattern, line)
+                            for m in matches:
                                 if archive:
                                     self.resultsQueue.put(("a", relpath))
                                     archive = None
                                 if member.filename:
                                     self.resultsQueue.put(("m", member.filename))
                                     member.filename = None
-                                self.resultsQueue.put((f'{i}', line))
+                                prefix = GLib.markup_escape_text(line[:m.start()])
+                                match = f'''<span foreground='red'>{GLib.markup_escape_text(m[0])}</span>'''
+                                suffix = GLib.markup_escape_text(line[m.end():])
+                                self.resultsQueue.put((f'{i}', f'{prefix}{match}{suffix}'))
                     except UnicodeError:
                         break
 
