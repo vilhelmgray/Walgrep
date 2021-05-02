@@ -123,20 +123,22 @@ class Walgrep(Gtk.Window):
                     continue
 
                 if search_by_name:
-                    matches = re.finditer(pattern, member.filename)
+                    basename = os.path.basename(member.filename)
+                    matches = re.finditer(pattern, basename)
                     filename = ""
                     pos = 0
                     for m in matches:
-                        prefix = GLib.markup_escape_text(member.filename[pos:m.start()])
+                        prefix = GLib.markup_escape_text(basename[pos:m.start()])
                         match = f"<span foreground='red'>{GLib.markup_escape_text(m[0])}</span>"
                         pos = m.end()
                         filename += f'{prefix}{match}'
                     if filename:
-                        filename += GLib.markup_escape_text(member.filename[pos:])
+                        prefix = os.path.dirname(member.filename)
+                        suffix = GLib.markup_escape_text(basename[pos:])
                         if archive:
                             self.resultsQueue.put(("a", archive))
                             archive = None
-                        self.resultsQueue.put(("m", filename))
+                        self.resultsQueue.put(("m", f'{prefix}{filename}{suffix}'))
                     continue
 
                 with z.open(member) as f:
