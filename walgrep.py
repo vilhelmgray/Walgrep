@@ -131,19 +131,22 @@ class Walgrep(Gtk.Window):
                     continue
 
                 with z.open(member) as f:
-                    lines = io.TextIOWrapper(f, errors='ignore')
-                    for i, line in enumerate(lines):
-                        if not self.searching:
-                            break;
-                        match = re.search(pattern, line)
-                        if match:
-                            if archive:
-                                self.resultsQueue.put(("a", relpath))
-                                archive = None
-                            if member.filename:
-                                self.resultsQueue.put(("m", member.filename))
-                                member.filename = None
-                            self.resultsQueue.put((f'{i}', line))
+                    lines = io.TextIOWrapper(f, encoding="utf-8")
+                    try:
+                        for i, line in enumerate(lines):
+                            if not self.searching:
+                                break;
+                            match = re.search(pattern, line)
+                            if match:
+                                if archive:
+                                    self.resultsQueue.put(("a", relpath))
+                                    archive = None
+                                if member.filename:
+                                    self.resultsQueue.put(("m", member.filename))
+                                    member.filename = None
+                                self.resultsQueue.put((f'{i}', line))
+                    except UnicodeError:
+                        break
 
     def process_queue(self, search_by_name):
         global zipIter, memberIter;
