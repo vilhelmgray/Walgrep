@@ -31,7 +31,7 @@ import zipfile
 
 class Walgrep(Gtk.Window):
     def __init__(self):
-        Gtk.Window.__init__(self, title="Walgrep", default_height=480, default_width=640)
+        Gtk.Window.__init__(self, title="Walgrep - ZIP file search utility", default_height=480, default_width=640)
         self.set_border_width(10)
 
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
