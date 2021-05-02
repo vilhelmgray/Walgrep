@@ -65,7 +65,7 @@ class Walgrep(Gtk.Window):
         patternBox.pack_start(self.patternEntry, True, True, 0)
         patternBox.pack_start(self.searchButton, False, False, 0)
 
-        self.filenameButton = Gtk.CheckButton(label="Toggle filename search")
+        self.filenameButton = Gtk.CheckButton(label="Toggle filename only search")
         vbox.pack_start(self.filenameButton, False, False, 0)
 
         progressBox = Gtk.Box(spacing=6)
