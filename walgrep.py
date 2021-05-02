@@ -154,7 +154,7 @@ class Walgrep(Gtk.Window):
                                     self.resultsQueue.put(("m", GLib.markup_escape_text(member.filename)))
                                     member.filename = None
                                 prefix = GLib.markup_escape_text(line[:m.start()])
-                                match = f'''<span foreground='red'>{GLib.markup_escape_text(m[0])}</span>'''
+                                match = f"<span foreground='red'>{GLib.markup_escape_text(m[0])}</span>"
                                 suffix = GLib.markup_escape_text(line[m.end():])
                                 self.resultsQueue.put((f'{i}', f'{prefix}{match}{suffix}'))
                     except UnicodeError:
