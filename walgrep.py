@@ -133,7 +133,7 @@ class Walgrep(Gtk.Window):
                         pos = m.end()
                         filename += f'{prefix}{match}'
                     if filename:
-                        prefix = os.path.dirname(member.filename)
+                        prefix = member.filename[:-len(basename)]
                         suffix = GLib.markup_escape_text(basename[pos:])
                         if archive:
                             self.resultsQueue.put(("a", archive))
