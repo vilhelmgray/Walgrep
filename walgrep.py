@@ -160,7 +160,7 @@ class Walgrep(Gtk.Window):
                                 suffix = GLib.markup_escape_text(line[m.end():])
                                 self.resultsQueue.put((f'{i}', f'{prefix}{match}{suffix}'))
                     except UnicodeError:
-                        break
+                        continue
 
     def process_queue(self, search_by_name):
         global zipIter, memberIter;
