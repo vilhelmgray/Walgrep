@@ -209,7 +209,10 @@ class Walgrep(Gtk.Window):
                         if zipfile.is_zipfile(zip_path):
                             with self.statusLock:
                                 self.status = f'Searching {zip_path}'
-                            self.parse_zip(path, os.path.relpath(zip_path, path), pattern, search_by_name)
+                            try:
+                                self.parse_zip(path, os.path.relpath(zip_path, path), pattern, search_by_name)
+                            except zipfile.BadZipFile as e:
+                                GLib.idle_add(self.handle_invalid_zip, e, zip_path)
                     if not recurse or not self.searching:
                         break;
             else:
